@@ -67,7 +67,7 @@ public class MineSweeper extends AbstractMineSweeper{
     }
 
     private int[] generateExplosiveAddresses() {
-        ArrayList<Integer> addresses = new ArrayList<Integer>();
+        ArrayList<Integer> addresses = new ArrayList<>();
         int bound = (this.height + 1) * (this.width + 1);
         int count = 0;
         while(count < this.explosiveCount){
