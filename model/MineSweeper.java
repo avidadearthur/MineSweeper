@@ -72,9 +72,19 @@ public class MineSweeper extends AbstractMineSweeper{
     @Override
     public void setWorld(AbstractTile[][] world) {
         int[] explosiveAddresses = generateExplosiveAddresses();
+        int len = explosiveAddresses.length;
 
-        for (int i=0; i<explosiveAddresses.length; ++i) {
+        for (int num : explosiveAddresses) {
+            int row = num / this.width;
+            int column = num % this.width;
+            world[column][row] = generateExplosiveTile();
+        }
 
+        for (int i=0; i<this.height; ++i) {
+            for (int j = 0; j < this.width; ++j) {
+                if (world[i][j] == null) {
+                    world[i][j] = generateEmptyTile();
+                }
             }
         }
     }
