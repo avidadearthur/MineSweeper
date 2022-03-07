@@ -1,8 +1,9 @@
 package model;
 
 import test.TestableTile;
+
+import java.util.ArrayList;
 import java.util.Random;
-import java.lang.reflect.Array;
 
 public class MineSweeper extends AbstractMineSweeper{
 
@@ -65,7 +66,7 @@ public class MineSweeper extends AbstractMineSweeper{
         return world[y][x];
     }
 
-    private ArrayList<Integer> generateExplosiveAddresses() {
+    private int[] generateExplosiveAddresses() {
         ArrayList<Integer> addresses = new ArrayList<Integer>();
         int bound = (this.height + 1) * (this.width + 1);
         int count = 0;
@@ -81,7 +82,7 @@ public class MineSweeper extends AbstractMineSweeper{
         for(int i = 0; i < addressesArray.length; i++) {
             addressesArray[i] = addresses.get(i);
         }
-        return addresses;
+        return addressesArray;
     }
 
     @Override
