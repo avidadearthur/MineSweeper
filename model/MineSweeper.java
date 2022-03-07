@@ -52,6 +52,7 @@ public class MineSweeper extends AbstractMineSweeper{
     public void startNewGame(int row, int col, int explosionCount) {
         this.height = row;
         this.width = col;
+        this.explosiveCount = explosionCount;
         this.world = new Tile[height][width];
         setWorld(this.world);
     }
@@ -66,34 +67,31 @@ public class MineSweeper extends AbstractMineSweeper{
         return world[y][x];
     }
 
-    private int[] generateExplosiveAddresses() {
-        ArrayList<Integer> addresses = new ArrayList<Integer>();
-        int bound = (this.height + 1) * (this.width + 1);
+    private ArrayList<Integer> generateExplosiveAddresses() {
+        ArrayList<Integer> addresses = new ArrayList<>();
+        int bound = this.height * this.width;
         int count = 0;
+
         while(count < this.explosiveCount){
             Random rnd = new Random();
             int nextAddress = rnd.nextInt(bound);
+
             if(!addresses.contains(nextAddress)) {
                 addresses.add(nextAddress);
                 count++;
             }
         }
-        int[] addressesArray = new int[explosiveCount];
-        for(int i = 0; i < addressesArray.length; i++) {
-            addressesArray[i] = addresses.get(i);
-        }
-        return addressesArray;
+        return addresses;
     }
 
     @Override
     public void setWorld(AbstractTile[][] world) {
-        int[] explosiveAddresses = generateExplosiveAddresses();
-        int len = explosiveAddresses.length;
+        ArrayList<Integer> explosiveAddresses = generateExplosiveAddresses();
 
         for (int num : explosiveAddresses) {
             int row = num / this.width;
             int column = num % this.width;
-            world[column][row] = generateExplosiveTile();
+            world[row][column] = generateExplosiveTile();
         }
 
         for (int i=0; i<this.height; ++i) {
