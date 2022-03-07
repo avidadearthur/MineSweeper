@@ -5,6 +5,7 @@
   <nodes>
     <node x="468.0" y="1010.0">App</node>
     <node x="376.0" y="66.5">notifier.IGameStateNotifier</node>
+    <node x="-310.92802056555263" y="1225.0">model.Tile</node>
     <node x="299.0" y="413.0">view.MinesweeperView</node>
     <node x="0.0" y="1225.0">model.AbstractTile</node>
     <node x="0.0" y="1010.0">test.TestableTile</node>
@@ -13,12 +14,12 @@
     <node x="1048.0" y="121.5">notifier.ITileStateNotifier</node>
     <node x="0.0" y="0.0">model.PlayableMinesweeper</node>
     <node x="672.0" y="0.0">test.gamemodel.GameModelTester</node>
+    <node x="7.0" y="608.4961439588689">model.MineSweeper</node>
     <node x="246.0" y="1010.0">model.Difficulty</node>
     <node x="891.0" y="490.5">test.gamemodel.GameModelTester.MockTileStateNotifier</node>
     <node x="7.0" y="237.0">test.TestableMinesweeper</node>
     <node x="0.0" y="496.0">model.AbstractMineSweeper</node>
     <node x="1099.0" y="468.5">view.TileView</node>
-    <node x="7.0" y="623.0">model.Minesweeper</node>
   </nodes>
   <notes />
   <edges>
@@ -40,15 +41,23 @@
       <point x="1133.5" y="388.0" />
       <point x="0.0" y="60.0" />
     </edge>
+    <edge source="model.Tile" target="model.AbstractTile" relationship="GENERALIZATION">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="model.AbstractMineSweeper" target="test.TestableMinesweeper" relationship="REALIZATION">
+      <point x="0.0" y="-38.5" />
+      <point x="0.0" y="104.5" />
+    </edge>
     <edge source="view.MinesweeperView" target="notifier.IGameStateNotifier" relationship="REALIZATION">
       <point x="0.0" y="-171.5" />
       <point x="437.0" y="388.0" />
       <point x="514.0" y="388.0" />
       <point x="0.0" y="115.0" />
     </edge>
-    <edge source="model.AbstractMineSweeper" target="test.TestableMinesweeper" relationship="REALIZATION">
-      <point x="0.0" y="-38.5" />
-      <point x="0.0" y="104.5" />
+    <edge source="model.MineSweeper" target="model.AbstractMineSweeper" relationship="GENERALIZATION">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
     </edge>
     <edge source="test.gamemodel.GameModelTester.MockGameStateNotifier" target="notifier.IGameStateNotifier" relationship="REALIZATION">
       <point x="-69.0" y="-149.0" />
@@ -68,10 +77,6 @@
       <point x="0.0" y="-104.5" />
       <point x="0.0" y="93.5" />
     </edge>
-    <edge source="model.Minesweeper" target="model.AbstractMineSweeper" relationship="GENERALIZATION">
-      <point x="0.0" y="-171.0" />
-      <point x="0.0" y="38.5" />
-    </edge>
     <edge source="view.TileView" target="notifier.ITileStateNotifier" relationship="REALIZATION">
       <point x="0.0" y="-116.0" />
       <point x="1210.5" y="388.0" />
@@ -79,9 +84,9 @@
       <point x="0.0" y="60.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="661.0" y="859.0" />
+  <settings layout="Hierarchic" zoom="0.537292817679558" showDependencies="false" x="654.0" y="671.082262210797" />
   <SelectedNodes>
-    <node>model.Minesweeper</node>
+    <node>model.MineSweeper</node>
   </SelectedNodes>
   <Categories>
     <Category>Constructors</Category>

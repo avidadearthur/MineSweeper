@@ -1,6 +1,6 @@
 package model;
 
-public class Minesweeper extends AbstractMineSweeper{
+public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public int getWidth() {
