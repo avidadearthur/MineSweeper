@@ -1,5 +1,7 @@
 package model;
 
+import test.TestableTile;
+import java.util.Random;
 import java.lang.reflect.Array;
 
 public class MineSweeper extends AbstractMineSweeper{
@@ -42,6 +44,7 @@ public class MineSweeper extends AbstractMineSweeper{
             }
         }
         this.world = new Tile[height][width];
+        setWorld(this.world);
     }
 
     @Override
@@ -49,6 +52,7 @@ public class MineSweeper extends AbstractMineSweeper{
         this.height = row;
         this.width = col;
         this.world = new Tile[height][width];
+        setWorld(this.world);
     }
 
     @Override
@@ -58,12 +62,21 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public AbstractTile getTile(int x, int y) {
+        return world[y][x];
+    }
+
+    private int[] generateExplosiveAddresses() {
         return null;
     }
 
     @Override
     public void setWorld(AbstractTile[][] world) {
+        int[] explosiveAddresses = generateExplosiveAddresses();
 
+        for (int i=0; i<explosiveAddresses.length; ++i) {
+
+            }
+        }
     }
 
     @Override
