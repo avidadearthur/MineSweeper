@@ -1,25 +1,54 @@
 package model;
 
+import java.lang.reflect.Array;
+
 public class MineSweeper extends AbstractMineSweeper{
+
+    public int height;
+    public int width;
+    public int explosiveCount;
+    public Tile[][] world;
+
+    public MineSweeper() {
+    }
 
     @Override
     public int getWidth() {
-        return 0;
+        return width;
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        return height;
     }
 
     @Override
     public void startNewGame(Difficulty level) {
-
+        switch (level) {
+            case EASY -> {
+                this.height = 8;
+                this.width = 8;
+                this.explosiveCount = 10;
+            }
+            case MEDIUM -> {
+                this.height = 16;
+                this.width = 16;
+                this.explosiveCount = 40;
+            }
+            case HARD -> {
+                this.height = 16;
+                this.width = 30;
+                this.explosiveCount = 99;
+            }
+        }
+        this.world = new Tile[height][width];
     }
 
     @Override
     public void startNewGame(int row, int col, int explosionCount) {
-
+        this.height = row;
+        this.width = col;
+        this.world = new Tile[height][width];
     }
 
     @Override
