@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import model.AbstractTile;
-//import model.Minesweeper;
+import model.Minesweeper;
 import notifier.IGameStateNotifier;
 import notifier.ITileStateNotifier;
 import test.TestableMinesweeper;
@@ -25,7 +25,7 @@ public class GameModelTester {
     @Before
     public void init() {
         //uncomment the line below once your game model code is ready for testing
-        //gameModel = new Minesweeper();
+        gameModel = new Minesweeper();
     }
 
     @Test
