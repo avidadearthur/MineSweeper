@@ -59,12 +59,12 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public AbstractTile generateEmptyTile() {
-        // Creates a tile object
-        return null;
+        // Tile newTile = new Tile(false);
+        return new Tile(false);
     }
 
     @Override
     public AbstractTile generateExplosiveTile() {
-        return null;
+        return new Tile(true);
     }
 }

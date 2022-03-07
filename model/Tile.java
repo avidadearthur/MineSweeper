@@ -1,6 +1,18 @@
 package model;
 
 public class Tile extends AbstractTile{
+
+    public boolean opened;
+    public boolean explosive;
+    public boolean flagged;
+
+    public Tile(boolean explosive) {
+        super();
+        this.opened = false;
+        this.flagged = false;
+        this.explosive = explosive;
+    }
+
     @Override
     public boolean open() {
         return false;
@@ -18,16 +30,16 @@ public class Tile extends AbstractTile{
 
     @Override
     public boolean isFlagged() {
-        return false;
+        return flagged;
     }
 
     @Override
     public boolean isExplosive() {
-        return false;
+        return explosive;
     }
 
     @Override
     public boolean isOpened() {
-        return false;
+        return opened;
     }
 }
