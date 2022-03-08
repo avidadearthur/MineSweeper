@@ -10,7 +10,7 @@ public class MineSweeper extends AbstractMineSweeper{
     public int height;
     public int width;
     public int explosiveCount;
-    public Tile[][] world;
+    public AbstractTile[][] world;
 
     public MineSweeper() {
     }
@@ -64,7 +64,7 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public AbstractTile getTile(int x, int y) {
-        return world[y][x];
+        return this.world[y][x];
     }
 
     private ArrayList<Integer> generateExplosiveAddresses() {
@@ -101,6 +101,7 @@ public class MineSweeper extends AbstractMineSweeper{
                 }
             }
         }
+        this.world = world;
     }
 
     @Override
