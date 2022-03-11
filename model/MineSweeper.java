@@ -59,7 +59,8 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public void toggleFlag(int x, int y) {
-
+        if (this.world[x][y].isFlagged()) {this.world[x][y].unflag();}
+        else {this.world[x][y].flag();}
     }
 
     @Override
