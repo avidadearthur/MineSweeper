@@ -20,12 +20,12 @@ public class Tile extends AbstractTile{
 
     @Override
     public void flag() {
-
+        this.flagged = true;
     }
 
     @Override
     public void unflag() {
-
+        this.flagged = false;
     }
 
     @Override
