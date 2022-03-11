@@ -107,7 +107,7 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public void open(int x, int y) {
-
+        this.world[x][y].open();
     }
 
     @Override
