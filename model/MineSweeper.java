@@ -10,7 +10,7 @@ public class MineSweeper extends AbstractMineSweeper{
     public int height;
     public int width;
     public int explosiveCount;
-    public Tile[][] world;
+    public AbstractTile[][] world;
 
     public MineSweeper() {
     }
@@ -59,12 +59,19 @@ public class MineSweeper extends AbstractMineSweeper{
 
     @Override
     public void toggleFlag(int x, int y) {
-
+        if (this.world[x][y].isFlagged()) {this.world[x][y].unflag();}
+        else {this.world[x][y].flag();}
     }
 
     @Override
     public AbstractTile getTile(int x, int y) {
-        return world[y][x];
+        try {
+            return this.world[y][x];
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Failed to open tile. Invalid index.");
+            return null;
+        }
     }
 
     private ArrayList<Integer> generateExplosiveAddresses() {
@@ -101,21 +108,27 @@ public class MineSweeper extends AbstractMineSweeper{
                 }
             }
         }
+        this.world = world;
     }
 
     @Override
     public void open(int x, int y) {
-
+        try {
+            this.world[x][y].open();
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Failed to open tile. Invalid index");
+        }
     }
 
     @Override
     public void flag(int x, int y) {
-
+        this.world[x][y].flag();
     }
 
     @Override
     public void unflag(int x, int y) {
-
+        this.world[x][y].unflag();
     }
 
     @Override
