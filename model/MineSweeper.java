@@ -62,6 +62,7 @@ public class MineSweeper extends AbstractMineSweeper {
         this.won = false;
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
+        viewNotifier.notifyFlagCountChanged(flagCount);
 
         startTime = LocalTime.now();
         Runnable r = () -> {
@@ -165,7 +166,7 @@ public class MineSweeper extends AbstractMineSweeper {
             int newCol = y + off[1];
             if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive() && !world[newRow][newCol].isOpened()) {
                 if (world[newRow][newCol].isFlagged())
-                    unflag(newRow, newCol);
+                    toggleFlag(newRow, newCol);
                 if (countExplosiveNeighbors(newRow, newCol) == 0)
                     openBlank(newRow, newCol);
                 else {
@@ -180,6 +181,8 @@ public class MineSweeper extends AbstractMineSweeper {
     private void openExplosive() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
+                if(world[i][j].isFlagged())
+                    toggleFlag(i, j);
                 if (world[i][j].isExplosive()) {
                     viewNotifier.notifyExploded(i, j);
                 } else if (!world[i][j].isOpened())
