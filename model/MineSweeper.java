@@ -189,6 +189,8 @@ public class MineSweeper extends AbstractMineSweeper {
                     open(x, y);
                 } else {
                     openExplosive();
+                    viewNotifier.notifyGameLost();
+                    firstOpened = false;
                 }
             } else if (countExplosiveNeighbors(x, y) == 0) {
                 openBlank(x, y);
