@@ -15,7 +15,7 @@ public class MineSweeper extends AbstractMineSweeper {
 
     private final int[][] offsetOfTile = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     private boolean firstOpened = false;
-    private boolean lost = false;
+    private boolean lost;
 
     private LocalTime startTime;
 
@@ -54,6 +54,7 @@ public class MineSweeper extends AbstractMineSweeper {
         this.explosiveCount = explosionCount;
         this.flagCount = 0;
         this.world = new Tile[height][width];
+        this.lost = false;
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
 
@@ -139,12 +140,11 @@ public class MineSweeper extends AbstractMineSweeper {
         for (int[] off : offsetOfTile) {
             int newRow = x + off[0];
             int newCol = y + off[1];
-            if (verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) == 0
-                    && !world[newRow][newCol].isOpened()) {
-                openBlank(newRow, newCol);
-            } else if (verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) > 0
-                    && !world[newRow][newCol].isOpened()) {
-                viewNotifier.notifyOpened(newRow, newCol, countExplosiveNeighbors(newRow, newCol));
+            if(verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive() && !world[newRow][newCol].isOpened()) {
+                if (countExplosiveNeighbors(newRow, newCol) == 0 )
+                    openBlank(newRow, newCol);
+                else
+                    viewNotifier.notifyOpened(newRow, newCol, countExplosiveNeighbors(newRow, newCol));
             }
         }
     }
@@ -180,8 +180,10 @@ public class MineSweeper extends AbstractMineSweeper {
                 }
             } else if (countExplosiveNeighbors(x, y) == 0) {
                 openBlank(x, y);
+                firstOpened = true;
             } else {
                 viewNotifier.notifyOpened(x, y, countExplosiveNeighbors(x, y));
+                firstOpened = true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
