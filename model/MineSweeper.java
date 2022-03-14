@@ -205,7 +205,17 @@ public class MineSweeper extends AbstractMineSweeper {
 
     @Override
     public void flag(int x, int y) {
-        this.world[x][y].flag();
+        if(!world[x][y].isFlagged()) {
+            this.world[x][y].flag();
+            viewNotifier.notifyFlagged(x, y);
+            for (int[] off : offsetOfTile) {
+                int newRow = x + off[0];
+                int newCol = y + off[1];
+
+            }
+        }
+        else
+            unflag(x, y);
     }
 
     @Override
