@@ -15,7 +15,10 @@ public class MineSweeper extends AbstractMineSweeper {
 
     private final int[][] offsetOfTile = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     private boolean firstOpened = false;
+
+    private boolean won;
     private boolean lost;
+    private int tilesLeft;
 
     private LocalTime startTime;
 
@@ -32,7 +35,7 @@ public class MineSweeper extends AbstractMineSweeper {
         return height;
     }
 
-    private Duration setTimer(){
+    private Duration setTimer() {
         Duration d = Duration.between(startTime, LocalTime.now());
         return d;
     }
@@ -52,15 +55,17 @@ public class MineSweeper extends AbstractMineSweeper {
         this.height = row;
         this.width = col;
         this.explosiveCount = explosionCount;
-        this.flagCount = 0;
+        this.flagCount = explosionCount;
+        this.tilesLeft = this.height * this.width;
         this.world = new Tile[height][width];
         this.lost = false;
+        this.won = false;
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
 
         startTime = LocalTime.now();
         Runnable r = () -> {
-            while(!lost){
+            while (!lost && !won) {
                 viewNotifier.notifyTimeElapsedChanged(setTimer());
             }
         };
@@ -134,17 +139,40 @@ public class MineSweeper extends AbstractMineSweeper {
         return explosiveNeighbors;
     }
 
+    private void determineWon() {
+        tilesLeft--;
+        //win when all empty tiles opened and flagCount = 0
+        /*
+        if (tilesLeft == explosiveCount && flagCount == 0) {
+            viewNotifier.notifyGameWon();
+            won = true;
+        }
+        */
+        //win only when all empty tiles opened
+        if (tilesLeft == explosiveCount) {
+            viewNotifier.notifyGameWon();
+            won = true;
+        }
+    }
+
     private void openBlank(int x, int y) {
         world[x][y].open();
         viewNotifier.notifyOpened(x, y, 0);
+        firstOpened = true;
+        determineWon();
         for (int[] off : offsetOfTile) {
             int newRow = x + off[0];
             int newCol = y + off[1];
-            if(verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive() && !world[newRow][newCol].isOpened()) {
-                if (countExplosiveNeighbors(newRow, newCol) == 0 )
+            if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive() && !world[newRow][newCol].isOpened()) {
+                if (world[newRow][newCol].isFlagged())
+                    unflag(newRow, newCol);
+                if (countExplosiveNeighbors(newRow, newCol) == 0)
                     openBlank(newRow, newCol);
-                else
+                else {
+                    world[newRow][newCol].open();
                     viewNotifier.notifyOpened(newRow, newCol, countExplosiveNeighbors(newRow, newCol));
+                    determineWon();
+                }
             }
         }
     }
@@ -164,26 +192,27 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public void open(int x, int y) {
         try {
-            this.world[x][y].open();
-
-            if (world[x][y].isExplosive()) {
-                if (!firstOpened) {
-                    setFirstEmptyExplosive();
-                    world[x][y] = generateEmptyTile();
-                    firstOpened = true;
-                    open(x, y);
+            if (!world[x][y].isOpened()) {
+                if (world[x][y].isExplosive()) {
+                    if (!firstOpened) {
+                        setFirstEmptyExplosive();
+                        world[x][y] = generateEmptyTile();
+                        firstOpened = true;
+                        open(x, y);
+                    } else {
+                        openExplosive();
+                        lost = true;
+                        viewNotifier.notifyGameLost();
+                        firstOpened = false;
+                    }
+                } else if (countExplosiveNeighbors(x, y) == 0) {
+                    openBlank(x, y);
                 } else {
-                    openExplosive();
-                    lost = true;
-                    viewNotifier.notifyGameLost();
-                    firstOpened = false;
+                    world[x][y].open();
+                    viewNotifier.notifyOpened(x, y, countExplosiveNeighbors(x, y));
+                    firstOpened = true;
+                    determineWon();
                 }
-            } else if (countExplosiveNeighbors(x, y) == 0) {
-                openBlank(x, y);
-                firstOpened = true;
-            } else {
-                viewNotifier.notifyOpened(x, y, countExplosiveNeighbors(x, y));
-                firstOpened = true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -198,20 +227,16 @@ public class MineSweeper extends AbstractMineSweeper {
 
     @Override
     public void flag(int x, int y) {
-        if(!this.world[x][y].isOpened()) {
-            this.world[x][y].flag();
-            flagCount++;
-            viewNotifier.notifyFlagged(x, y);
-        }
+        this.world[x][y].flag();
+        flagCount--;
+        viewNotifier.notifyFlagged(x, y);
     }
 
     @Override
     public void unflag(int x, int y) {
-        if(!this.world[x][y].isOpened()) {
-            this.world[x][y].unflag();
-            flagCount--;
-            viewNotifier.notifyUnflagged(x, y);
-        }
+        this.world[x][y].unflag();
+        flagCount++;
+        viewNotifier.notifyUnflagged(x, y);
     }
 
     @Override
@@ -222,6 +247,14 @@ public class MineSweeper extends AbstractMineSweeper {
             } else {
                 flag(x, y);
             }
+            //win when all empty tiles opened and flagCount = 0
+            //without this part, win only when all empty tiles opened
+            /*
+            if (tilesLeft == explosiveCount && flagCount == 0) {
+                viewNotifier.notifyGameWon();
+                won = true;
+            }
+            */
             viewNotifier.notifyFlagCountChanged(flagCount);
         }
     }
