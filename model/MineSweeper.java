@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,6 +16,8 @@ public class MineSweeper extends AbstractMineSweeper {
     private final int[][] offsetOfTile = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     private boolean firstOpened = false;
 
+    private LocalTime startTime;
+
     public MineSweeper() {
     }
 
@@ -25,6 +29,11 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public int getHeight() {
         return height;
+    }
+
+    private Duration setTimer(){
+        Duration d = Duration.between(startTime, LocalTime.now());
+        return d;
     }
 
     @Override
@@ -51,6 +60,14 @@ public class MineSweeper extends AbstractMineSweeper {
         this.world = new Tile[height][width];
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
+
+        startTime = LocalTime.now();
+        Runnable r = () -> {
+            while(true){
+                viewNotifier.notifyTimeElapsedChanged(setTimer());
+            }
+        };
+        new Thread(r).start();
     }
 
     private ArrayList<Integer> generateExplosiveAddresses() {
