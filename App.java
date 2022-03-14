@@ -1,5 +1,5 @@
 import model.Difficulty;
-//import model.MineSweeper;
+import model.MineSweeper;
 import model.PlayableMinesweeper;
 import view.MinesweeperView;
 
@@ -7,14 +7,13 @@ public class App {
     public static void main(String[] args) throws Exception {
         MinesweeperView view = new MinesweeperView();
         //Uncomment the lines below once your game model code is ready; don't forget to import your game model 
-        //PlayableMinesweeper model = new MineSweeper();
-        
+        PlayableMinesweeper model = new MineSweeper();
+        view.setGameModel(model);
         
         /**
             Your code to bind your game model to the game user interface
         */
-        
-        
-        //model.startNewGame(Difficulty.EASY);
+
+        model.startNewGame(Difficulty.EASY);
     }
 }

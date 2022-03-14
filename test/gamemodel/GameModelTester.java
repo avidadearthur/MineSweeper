@@ -79,7 +79,7 @@ public class GameModelTester {
             for (int i=0; i<h; ++i)
                 for (int j=0; j<w; ++j) 
                     try {
-                        TestableTile temp = gameModel.getTile(j, i);
+                        TestableTile temp = gameModel.getTile(i, j);
                         if (temp == null) throw new Exception();
                     }catch (Exception e) {
                         e.printStackTrace();
@@ -90,18 +90,18 @@ public class GameModelTester {
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j) {
-                TestableTile temp = gameModel.getTile(j, i);
+                TestableTile temp = gameModel.getTile(i, j);
                 explosionCount += (temp.isExplosive())? 1 : 0;
             }  
         assertEquals(explosionCount, totalExplosion);
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j)
-                assertNotNull(gameModel.getTile(j, i));
+                assertNotNull(gameModel.getTile(i, j));
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j)
-                assertTrue(gameModel.getTile(j, i) instanceof TestableTile);
+                assertTrue(gameModel.getTile(i, j) instanceof TestableTile);
 
     }
 
@@ -125,7 +125,7 @@ public class GameModelTester {
         gameModel.setWorld(world);
         for (int i=0; i<row; ++i)
             for (int j=0; j<col; ++j)
-                assertEquals(gameModel.getTile(j, i), world[i][j]);
+                assertEquals(gameModel.getTile(i, j), world[i][j]);
     }
 
     @Test
@@ -292,7 +292,7 @@ public class GameModelTester {
             public void notifyOpened(int x, int y, int explosiveNeighbourCount) {
                 assertEquals(x, target[0]);
                 assertEquals(y, target[1]);
-                assertEquals(explosiveNeighbourCount, explosionCount);
+                assertEquals(explosiveNeighbourCount, 4);
             }
         });
         gameModel.setWorld(world);
@@ -448,8 +448,8 @@ public class GameModelTester {
         boolean firstExplosiveTileOpened = false;
         for (int i=0; i<size && !firstExplosiveTileOpened; ++i)
             for (int j=0; j<size && !firstExplosiveTileOpened; ++j)
-                if (gameModel.getTile(j, i).isExplosive()) {
-                    gameModel.open(j, i);
+                if (gameModel.getTile(i, j).isExplosive()) {
+                    gameModel.open(i, j);
                     firstExplosiveTileOpened = true;
                 }
     }
