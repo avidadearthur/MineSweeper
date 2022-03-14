@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,10 +10,13 @@ public class MineSweeper extends AbstractMineSweeper {
     public int height;
     public int width;
     public int explosiveCount;
+    public int flagCount;
     public AbstractTile[][] world;
 
     private final int[][] offsetOfTile = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     private boolean firstOpened = false;
+
+    private LocalTime startTime;
 
     public MineSweeper() {
     }
@@ -26,28 +31,24 @@ public class MineSweeper extends AbstractMineSweeper {
         return height;
     }
 
+    private Duration setTimer(){
+        Duration d = Duration.between(startTime, LocalTime.now());
+        return d;
+    }
+
     @Override
     public void startNewGame(Difficulty level) {
         switch (level) {
             case EASY -> {
-                this.height = 8;
-                this.width = 8;
-                this.explosiveCount = 10;
+                startNewGame(8, 8, 10);
             }
             case MEDIUM -> {
-                this.height = 16;
-                this.width = 16;
-                this.explosiveCount = 40;
+                startNewGame(16, 16, 40);
             }
             case HARD -> {
-                this.height = 16;
-                this.width = 30;
-                this.explosiveCount = 99;
+                startNewGame(16, 30, 99);
             }
         }
-        this.world = new Tile[height][width];
-        setWorld(this.world);
-        viewNotifier.notifyNewGame(height, width);
     }
 
     @Override
@@ -55,28 +56,18 @@ public class MineSweeper extends AbstractMineSweeper {
         this.height = row;
         this.width = col;
         this.explosiveCount = explosionCount;
+        this.flagCount = 0;
         this.world = new Tile[height][width];
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
-    }
 
-    @Override
-    public void toggleFlag(int x, int y) {
-        if (this.world[x][y].isFlagged()) {
-            this.world[x][y].unflag();
-        } else {
-            this.world[x][y].flag();
-        }
-    }
-
-    @Override
-    public AbstractTile getTile(int x, int y) {
-        try {
-            return this.world[x][y];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Failed to open tile. Invalid index.");
-            return null;
-        }
+        startTime = LocalTime.now();
+        Runnable r = () -> {
+            while(true){
+                viewNotifier.notifyTimeElapsedChanged(setTimer());
+            }
+        };
+        new Thread(r).start();
     }
 
     private ArrayList<Integer> generateExplosiveAddresses() {
@@ -152,24 +143,22 @@ public class MineSweeper extends AbstractMineSweeper {
         for (int[] off : offsetOfTile) {
             int newRow = x + off[0];
             int newCol = y + off[1];
-            if(verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) == 0
+            if (verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) == 0
                     && !world[newRow][newCol].isOpened()) {
                 openBlank(newRow, newCol);
-            }
-            else if(verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) > 0
-                    && !world[newRow][newCol].isOpened()){
+            } else if (verifyBound(newRow, newCol) && countExplosiveNeighbors(newRow, newCol) > 0
+                    && !world[newRow][newCol].isOpened()) {
                 viewNotifier.notifyOpened(newRow, newCol, countExplosiveNeighbors(newRow, newCol));
             }
         }
     }
 
-    private void openExplosive(){
+    private void openExplosive() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (world[i][j].isExplosive()) {
                     viewNotifier.notifyExploded(i, j);
-                }
-                else if(!world[i][j].isOpened())
+                } else if (!world[i][j].isOpened())
                     viewNotifier.notifyOpened(i, j, countExplosiveNeighbors(i, j));
                 world[i][j].open();
             }
@@ -204,18 +193,38 @@ public class MineSweeper extends AbstractMineSweeper {
     }
 
     @Override
+    public void deactivateFirstTileRule() {
+        firstOpened = true;
+    }
+
+    @Override
     public void flag(int x, int y) {
-        this.world[x][y].flag();
+        if(!this.world[x][y].isOpened()) {
+            this.world[x][y].flag();
+            flagCount++;
+            viewNotifier.notifyFlagged(x, y);
+        }
     }
 
     @Override
     public void unflag(int x, int y) {
-        this.world[x][y].unflag();
+        if(!this.world[x][y].isOpened()) {
+            this.world[x][y].unflag();
+            flagCount--;
+            viewNotifier.notifyUnflagged(x, y);
+        }
     }
 
     @Override
-    public void deactivateFirstTileRule() {
-        firstOpened = true;
+    public void toggleFlag(int x, int y) {
+        if (!this.world[x][y].isOpened()) {
+            if (this.world[x][y].isFlagged()) {
+                unflag(x, y);
+            } else {
+                flag(x, y);
+            }
+            viewNotifier.notifyFlagCountChanged(flagCount);
+        }
     }
 
     @Override
@@ -226,5 +235,15 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public AbstractTile generateExplosiveTile() {
         return new Tile(true);
+    }
+
+    @Override
+    public AbstractTile getTile(int x, int y) {
+        try {
+            return this.world[x][y];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Failed to open tile. Invalid index.");
+            return null;
+        }
     }
 }
