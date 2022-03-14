@@ -87,9 +87,9 @@ public class MinesweeperView implements IGameStateNotifier {
         }
         flagPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         try {
-            JLabel clockIcon = new JLabel(new ImageIcon(ImageIO.read(new File(AssetPath.FLAG_ICON))));
-            clockIcon.setSize(new DimensionUIResource(10, 10));
-            flagPanel.add(clockIcon);
+            JLabel flagIcon = new JLabel(new ImageIcon(ImageIO.read(new File(AssetPath.FLAG_ICON))));
+            flagIcon.setSize(new DimensionUIResource(10, 10));
+            flagPanel.add(flagIcon);
             flagPanel.add(new JLabel("FLAG: "));
             flagPanel.add(this.flagCountView);
         } catch (IOException e) {
@@ -153,7 +153,7 @@ public class MinesweeperView implements IGameStateNotifier {
         this.tiles = new TileView[row][col];
         for (int i=0; i<row; ++i) {
             for (int j=0; j<col; ++j) {
-                TileView temp = new TileView(j, i); 
+                TileView temp = new TileView(i, j);
                 temp.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent arg0) {
@@ -207,22 +207,22 @@ public class MinesweeperView implements IGameStateNotifier {
 
     @Override
     public void notifyOpened(int x, int y, int explosiveNeighbourCount) {
-        this.tiles[y][x].notifyOpened(explosiveNeighbourCount);
+        this.tiles[x][y].notifyOpened(explosiveNeighbourCount);
     }
 
     @Override
     public void notifyFlagged(int x, int y) {
-        this.tiles[y][x].notifyFlagged();
+        this.tiles[x][y].notifyFlagged();
     }
 
     @Override
     public void notifyUnflagged(int x, int y) {
-        this.tiles[y][x].notifyUnflagged();
+        this.tiles[x][y].notifyUnflagged();
     }
 
     @Override
     public void notifyExploded(int x, int y) {
-        this.tiles[y][x].notifyExplode();
+        this.tiles[x][y].notifyExplode();
     }
 
 }
