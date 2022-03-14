@@ -230,7 +230,6 @@ public class MineSweeper extends AbstractMineSweeper {
 
     @Override
     public AbstractTile generateEmptyTile() {
-        // Tile newTile = new Tile(false);
         return new Tile(false);
     }
 
