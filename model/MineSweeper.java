@@ -15,6 +15,7 @@ public class MineSweeper extends AbstractMineSweeper {
 
     private final int[][] offsetOfTile = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     private boolean firstOpened = false;
+    private boolean lost = false;
 
     private LocalTime startTime;
 
@@ -39,15 +40,10 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public void startNewGame(Difficulty level) {
         switch (level) {
-            case EASY -> {
-                startNewGame(8, 8, 10);
-            }
-            case MEDIUM -> {
-                startNewGame(16, 16, 40);
-            }
-            case HARD -> {
-                startNewGame(16, 30, 99);
-            }
+            case EASY -> startNewGame(8, 8, 10);
+            case MEDIUM -> startNewGame(16, 16, 40);
+            case HARD -> startNewGame(16, 30, 99);
+            default -> throw new IllegalStateException("Unexpected value: " + level);
         }
     }
 
@@ -63,7 +59,7 @@ public class MineSweeper extends AbstractMineSweeper {
 
         startTime = LocalTime.now();
         Runnable r = () -> {
-            while(true){
+            while(!lost){
                 viewNotifier.notifyTimeElapsedChanged(setTimer());
             }
         };
@@ -178,6 +174,7 @@ public class MineSweeper extends AbstractMineSweeper {
                     open(x, y);
                 } else {
                     openExplosive();
+                    lost = true;
                     viewNotifier.notifyGameLost();
                     firstOpened = false;
                 }
