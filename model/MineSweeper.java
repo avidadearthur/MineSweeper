@@ -36,8 +36,7 @@ public class MineSweeper extends AbstractMineSweeper {
     }
 
     private Duration setTimer() {
-        Duration d = Duration.between(startTime, LocalTime.now());
-        return d;
+        return Duration.between(startTime, LocalTime.now());
     }
 
     @Override
@@ -92,19 +91,17 @@ public class MineSweeper extends AbstractMineSweeper {
 
     @Override
     public void setWorld(AbstractTile[][] world) {
-        ArrayList<Integer> explosiveAddresses = generateExplosiveAddresses();
-
-        for (int num : explosiveAddresses) {
-            int row = num / this.width;
-            int column = num % this.width;
-            world[row][column] = generateExplosiveTile();
-        }
-
-        for (int i = 0; i < this.height; ++i) {
-            for (int j = 0; j < this.width; ++j) {
-                if (world[i][j] == null) {
-                    world[i][j] = generateEmptyTile();
-                }
+        for (int i = 0; i < height; ++i)
+            for (int j = 0; j < width; ++j) {
+                world[i][j] = generateEmptyTile();
+            }
+        for (int i = 0; i < explosiveCount; i++) {
+            int x = (int) (Math.random() * (height - 1));
+            int y = (int) (Math.random() * (width - 1));
+            if (world[x][y].isExplosive()) {
+                i--;
+            } else {
+                world[x][y] = generateExplosiveTile();
             }
         }
         this.world = world;
@@ -156,28 +153,6 @@ public class MineSweeper extends AbstractMineSweeper {
         }
     }
 
-    private void openBlank(int x, int y) {
-        world[x][y].open();
-        viewNotifier.notifyOpened(x, y, 0);
-        firstOpened = true;
-        determineWon();
-        for (int[] off : offsetOfTile) {
-            int newRow = x + off[0];
-            int newCol = y + off[1];
-            if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive() && !world[newRow][newCol].isOpened()) {
-                if (world[newRow][newCol].isFlagged())
-                    toggleFlag(newRow, newCol);
-                if (countExplosiveNeighbors(newRow, newCol) == 0)
-                    openBlank(newRow, newCol);
-                else {
-                    world[newRow][newCol].open();
-                    viewNotifier.notifyOpened(newRow, newCol, countExplosiveNeighbors(newRow, newCol));
-                    determineWon();
-                }
-            }
-        }
-    }
-
     private void openExplosive() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -209,7 +184,19 @@ public class MineSweeper extends AbstractMineSweeper {
                         firstOpened = false;
                     }
                 } else if (countExplosiveNeighbors(x, y) == 0) {
-                    openBlank(x, y);
+                    world[x][y].open();
+                    viewNotifier.notifyOpened(x, y, 0);
+                    firstOpened = true;
+                    determineWon();
+                    for (int[] off : offsetOfTile) {
+                        int newRow = x + off[0];
+                        int newCol = y + off[1];
+                        if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive()) {
+                            if (world[newRow][newCol].isFlagged())
+                                toggleFlag(newRow, newCol);
+                            open(newRow, newCol);
+                        }
+                    }
                 } else {
                     world[x][y].open();
                     viewNotifier.notifyOpened(x, y, countExplosiveNeighbors(x, y));
