@@ -2,6 +2,7 @@ package model;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Random;
 
 public class MineSweeper extends AbstractMineSweeper {
 
@@ -40,7 +41,7 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public void startNewGame(Difficulty level) {
         switch (level) {
-            case EASY -> startNewGame(8, 8, 10);
+            case EASY -> startNewGame(8, 8, 63);
             case MEDIUM -> startNewGame(16, 16, 40);
             case HARD -> startNewGame(16, 30, 99);
             default -> throw new IllegalStateException("Unexpected value: " + level);
@@ -57,6 +58,7 @@ public class MineSweeper extends AbstractMineSweeper {
         this.world = new Tile[height][width];
         this.lost = false;
         this.won = false;
+        this.firstOpened = false;
         setWorld(this.world);
         viewNotifier.notifyNewGame(row, col);
         viewNotifier.notifyFlagCountChanged(flagCount);
@@ -72,13 +74,14 @@ public class MineSweeper extends AbstractMineSweeper {
 
     @Override
     public void setWorld(AbstractTile[][] world) {
+        Random rnd = new Random();
         for (int i = 0; i < height; ++i)
             for (int j = 0; j < width; ++j) {
                 world[i][j] = generateEmptyTile();
             }
         for (int i = 0; i < explosiveCount; i++) {
-            int x = (int) (Math.random() * (height - 1));
-            int y = (int) (Math.random() * (width - 1));
+            int x = rnd.nextInt(height);
+            int y = rnd.nextInt(width);
             if (world[x][y].isExplosive()) {
                 i--;
             } else {
@@ -158,18 +161,18 @@ public class MineSweeper extends AbstractMineSweeper {
                     if (!firstOpened) {
                         setFirstEmptyExplosive();
                         world[x][y] = generateEmptyTile();
-                        firstOpened = true;
+                        deactivateFirstTileRule();
                         open(x, y);
                     } else {
                         openExplosive();
                         lost = true;
                         viewNotifier.notifyGameLost();
-                        firstOpened = false;
+                        deactivateFirstTileRule();
                     }
                 } else if (countExplosiveNeighbors(x, y) == 0) {
                     world[x][y].open();
                     viewNotifier.notifyOpened(x, y, 0);
-                    firstOpened = true;
+                    deactivateFirstTileRule();
                     determineWon();
                     for (int[] off : offsetOfTile) {
                         int newRow = x + off[0];
@@ -180,7 +183,7 @@ public class MineSweeper extends AbstractMineSweeper {
                 } else {
                     world[x][y].open();
                     viewNotifier.notifyOpened(x, y, countExplosiveNeighbors(x, y));
-                    firstOpened = true;
+                    deactivateFirstTileRule();
                     determineWon();
                 }
             }
