@@ -2,8 +2,6 @@ package model;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class MineSweeper extends AbstractMineSweeper {
 
@@ -70,23 +68,6 @@ public class MineSweeper extends AbstractMineSweeper {
             }
         };
         new Thread(r).start();
-    }
-
-    private ArrayList<Integer> generateExplosiveAddresses() {
-        ArrayList<Integer> addresses = new ArrayList<>();
-        int bound = this.height * this.width;
-        int count = 0;
-
-        while (count < this.explosiveCount) {
-            Random rnd = new Random();
-            int nextAddress = rnd.nextInt(bound);
-
-            if (!addresses.contains(nextAddress)) {
-                addresses.add(nextAddress);
-                count++;
-            }
-        }
-        return addresses;
     }
 
     @Override
