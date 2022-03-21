@@ -151,6 +151,8 @@ public class MineSweeper extends AbstractMineSweeper {
     @Override
     public void open(int x, int y) {
         try {
+            if (world[x][y].isFlagged())
+                toggleFlag(x, y);
             if (!world[x][y].isOpened()) {
                 if (world[x][y].isExplosive()) {
                     if (!firstOpened) {
@@ -172,11 +174,8 @@ public class MineSweeper extends AbstractMineSweeper {
                     for (int[] off : offsetOfTile) {
                         int newRow = x + off[0];
                         int newCol = y + off[1];
-                        if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive()) {
-                            if (world[newRow][newCol].isFlagged())
-                                toggleFlag(newRow, newCol);
+                        if (verifyBound(newRow, newCol) && !world[newRow][newCol].isExplosive())
                             open(newRow, newCol);
-                        }
                     }
                 } else {
                     world[x][y].open();
