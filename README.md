@@ -1,5 +1,5 @@
 # MineSweeper
-This assignment was made for the Programming Techniques - 2021-2022 lab. 
+Project done for the class of Programming techniques @ Group T - Faculty of Engineering Technology / academic year 2021-22. 
 The goal was to learn how to use inheritance and dynamic method binding in a
 more complex application.
 
