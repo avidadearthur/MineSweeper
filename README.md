@@ -15,7 +15,7 @@ number of flag count, and mine left are shown on the display.
 
 ### Dependencies
 
-* openjdk-17.0.2
+* openjdk-17.0.2 or higher.
 * JUnit4 for running the tests used during development.
 
 ### Installing
